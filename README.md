@@ -1,1 +1,1 @@
-Projet en Medienverarbeitung
+Projet media
