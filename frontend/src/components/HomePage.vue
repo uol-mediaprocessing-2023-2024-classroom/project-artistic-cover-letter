@@ -43,6 +43,7 @@
                         <button class="basicButton" @click="loadLetters(yourname)">
                             Displays your name
                         </button>
+                        
                         <div>
                             <h3>Image Info:<br /></h3>
                             <p>
@@ -84,6 +85,7 @@ export default {
         return {
             // User related data
             cldId: "",
+            yourname: "",
             userName: "",
             isLoggedIn: false,
             loginData: {
@@ -132,6 +134,11 @@ export default {
             this.$emit("getCrop", selectedId, this.cldId);
         },
 
+        // Emit a getCrop event with the ID of the selected image.
+        loadLetters(yourname) {
+            this.$emit("loadLetters", yourname);
+        },
+        
         // --- AUTHENTICATION RELATED METHODS ---
 
         // Send a login request to the CEWE API test server.

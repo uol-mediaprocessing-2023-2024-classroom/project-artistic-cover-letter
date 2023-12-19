@@ -130,7 +130,14 @@ export default {
 
         /* This method retrieves a cropped version of the selected image from the backend. */
         async loadLetters(yourname) {
+            const localUrl = `http://127.0.0.1:8000/get-letter/${yourname}`;
 
+            const response = await fetch(localUrl);
+            const imageBlob = await response.blob();
+            const letterImgUrl = URL.createObjectURL(imageBlob);
+
+            // Update the selected image with the URL of the cropped image
+            this.selectedImage.url = letterImgUrl;
         },
 
         /* This method resets the current gallery and selected image. */
