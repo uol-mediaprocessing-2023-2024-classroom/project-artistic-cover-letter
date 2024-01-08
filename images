@@ -1,1 +1,257 @@
+!pip install pillow
 
+from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+import random 
+from google.colab import files
+
+lettres = {
+    'A': [
+        "0110",
+        "1001",
+        "1111",
+        "1001",
+        "1001"
+    ],
+    'B': [
+        "11100",
+        "10010",
+        "11100",
+        "10010",
+        "11100"
+    ],
+    'C': [
+        "0111",
+        "1000",
+        "1000",
+        "1000",
+        "0111"
+
+    ],
+
+    'D': [
+        "1110",
+        "1001",
+        "1001",
+        "1001",
+        "1110"
+    ],
+    'E': [
+        "1111",
+        "1000",
+        "1110",
+        "1000",
+        "1111"
+    ],
+    'F': [
+        "1111",
+        "1000",
+        "1110",
+        "1000",
+        "1000"
+    ],
+    'G': [
+        "0110",
+        "1000",
+        "1011",
+        "1001",
+        "0110"
+    ],
+    'H': [
+        "1001",
+        "1001",
+        "1111",
+        "1001",
+        "1001"
+    ],
+    'I': [
+        "0111",
+        "0010",
+        "0010",
+        "0010",
+        "0111"
+    ],
+    'J': [
+        "0001",
+        "0001",
+        "0001",
+        "1001",
+        "0110"
+    ],
+    'K': [
+        "1001",
+        "1010",
+        "1100",
+        "1010",
+        "1001"
+    ],
+    'L': [
+        "1000",
+        "1000",
+        "1000",
+        "1000",
+        "1111"
+    ],
+    'M': [
+        "10001",
+        "11011",
+        "10101",
+        "10001",
+        "10001"
+    ],
+    'N': [
+        "1001",
+        "1101",
+        "1011",
+        "1001",
+        "1001"
+    ],
+    'O': [
+        "0110",
+        "1001",
+        "1001",
+        "1001",
+        "0110"
+    ],
+    'P': [
+        "1110",
+        "1001",
+        "1110",
+        "1000",
+        "1000"
+    ],
+    'Q': [
+        "0110",
+        "1001",
+        "1001",
+        "1011",
+        "0111"
+    ],
+    'R': [
+        "1110",
+        "1001",
+        "1110",
+        "1010",
+        "1001"
+    ],
+    'S': [
+        "01110",
+        "10000",
+        "01100",
+        "00010",
+        "11100"
+    ],
+    'T': [
+        "11111",
+        "00100",
+        "00100",
+        "00100",
+        "00100"
+    ],
+    'U': [
+        "10010",
+        "10010",
+        "10010",
+        "10010",
+        "01100"
+    ],
+    'V': [
+        "10001",
+        "10001",
+        "01010",
+        "01010",
+        "00100"
+    ],
+    'W': [
+        "10001",
+        "10101",
+        "10101",
+        "11011",
+        "10001"
+    ],
+    'X': [
+        "10001",
+        "01010",
+        "00100",
+        "01010",
+        "10001"
+    ],
+    'Y': [
+        "10001",
+        "01010",
+        "00100",
+        "00100",
+        "00100"
+    ],
+    'Z': [
+        "1111",
+        "0001",
+        "0010",
+        "0100",
+        "1111"
+    ]
+    # Ajoutez d'autres lettres si nécessaire
+}
+
+# Remplacer les cases noires par une image (remplacez 'votre_image.png' par le chemin de votre image)
+liste_images = []
+#image_used =[]
+
+def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, taille=150):
+    # Créer un tableau avec les valeurs de la lettre
+    tableau_lettre = np.array([[int(pixel) for pixel in ligne] for ligne in lettre])
+
+    # Créer une image en utilisant imshow
+    for i in range(tableau_lettre.shape[0]):
+        for j in range(tableau_lettre.shape[1]):
+            if tableau_lettre[i, j] == 1:
+
+                if liste_images: 
+                # Générer un indice aléatoire
+                  indice_aleatoire = random.randint(0, len(liste_images) - 1)
+
+                # Sélectionner l'image correspondante à l'indice aléatoire
+                #image_path = liste_images[indice_aleatoire]
+    
+                #image_path = '/content/image.jpg'
+                  image = Image.open(liste_images[indice_aleatoire])
+                  image = image.resize((taille, taille))
+                  image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
+                # Placer l'image dans la case noire
+                  ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
+                  #image_used.append(indice_aleatoire)
+                  #liste_images.pop(indice_aleatoire)
+                
+    # Ajouter des lignes de quadrillage
+    ax.set_xticks(np.arange( -0.5, position_x + len(lettre[0]) * taille - 0.5, taille), minor=True)
+    ax.set_yticks(np.arange(- 0.5, position_y + len(lettre) * taille - 0.5, taille), minor=True)
+    ax.invert_yaxis()
+    ax.axis('off')
+    plt.draw()
+
+mot = input("Enter your name: ")
+# Demander à l'utilisateur de télécharger des images
+uploaded = files.upload()
+position_x = 0
+position_y = 0
+
+# Créer une figure et un axe une seule fois pour afficher toutes les lettres du mot
+fig, ax = plt.subplots()
+
+
+for filename in uploaded.keys():
+    liste_images.append(filename)
+    print(f"Image téléchargée : {filename}")
+
+# Parcourt chaque lettre dans le mot et affiche chaque lettre sous forme de pixels
+for lettre in mot.upper():  # Convertit toutes les lettres en majuscules
+    print(lettre)
+    if lettre in lettres:
+        afficher_lettre_en_pixels_avec_quadrillage(lettres[lettre], position_x, position_y)
+        position_x += len(lettres[lettre][0]) * 150 + 200  # Ajuster la position pour la lettre suivante
+    else:
+        print("Lettre non prise en charge:", lettre)
+
+plt.show()
