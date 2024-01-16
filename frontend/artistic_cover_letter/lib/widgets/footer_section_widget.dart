@@ -11,7 +11,7 @@ class FooterSection extends StatelessWidget {
       child: const Column(
         children: [
           Text(
-            'Photo Collage App',
+            'Artistic Cover Letter',
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
@@ -28,7 +28,7 @@ class FooterSection extends StatelessWidget {
           ),
           SizedBox(height: 16.0),
           Text(
-            'All rights reserved ©2023 Photo Collage App',
+            'All rights reserved ©2024 Photo Collage',
             style: TextStyle(
               color: Colors.white54,
             ),
