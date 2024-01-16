@@ -197,7 +197,7 @@ lettres = {
 
 # Remplacer les cases noires par une image (remplacez 'votre_image.png' par le chemin de votre image)
 liste_images = []
-#image_used =[]
+image_used =[]
 
 def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, taille=150):
     # Créer un tableau avec les valeurs de la lettre
@@ -208,21 +208,36 @@ def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, t
         for j in range(tableau_lettre.shape[1]):
             if tableau_lettre[i, j] == 1:
 
-                if liste_images: 
+                if liste_images:
                 # Générer un indice aléatoire
                   indice_aleatoire = random.randint(0, len(liste_images) - 1)
 
                 # Sélectionner l'image correspondante à l'indice aléatoire
                 #image_path = liste_images[indice_aleatoire]
-    
+
                 #image_path = '/content/image.jpg'
                   image = Image.open(liste_images[indice_aleatoire])
                   image = image.resize((taille, taille))
                   image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
                 # Placer l'image dans la case noire
                   ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
-                  #image_used.append(indice_aleatoire)
-                  #liste_images.pop(indice_aleatoire)
+                  image_used.append(liste_images[indice_aleatoire])
+                  liste_images.remove(liste_images[indice_aleatoire])
+
+                else: 
+                  indice_aleatoire = random.randint(0, len(image_used) - 1)
+                  print(indice_aleatoire)
+                # Sélectionner l'image correspondante à l'indice aléatoire
+                #image_path = liste_images[indice_aleatoire]
+
+                #image_path = '/content/image.jpg'
+                  image = Image.open(image_used[indice_aleatoire])
+                  image = image.resize((taille, taille))
+                  image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
+                # Placer l'image dans la case noire
+                  ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
+                  
+
                 
     # Ajouter des lignes de quadrillage
     ax.set_xticks(np.arange( -0.5, position_x + len(lettre[0]) * taille - 0.5, taille), minor=True)
