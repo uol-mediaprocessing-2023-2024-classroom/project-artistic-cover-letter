@@ -4,14 +4,16 @@ import urllib.request
 import  cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 from fastapi import FastAPI, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image, ImageFilter
 from ultralytics import YOLO
-from random import randrange
 
+
+iteration = 0
 app = FastAPI()
 
 # SSL configuration for HTTPS requests
@@ -259,8 +261,8 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     apply_crop(img_path)
 
     # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_file, img_path)
-
+    #background_tasks.add_task(remove_file, img_path)
+    #background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
     return FileResponse(img_path)
 
@@ -272,10 +274,10 @@ async def get_letter(yourname: str, background_tasks: BackgroundTasks):
     apply_letter(yourname, img_path)
     
     # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_file, img_path)
-
+    background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
     return FileResponse(img_path)
+
 
 # Downloads an image from the specified URL and saves it to the given path.
 def download_image(image_url: str, img_path: str):
@@ -304,20 +306,27 @@ def apply_crop(img_path: str):
 
     for result in results:
         for boxe in result.boxes.conf:
-            if boxe.numpy() > 0.7 : # if % > 0.9
+            if boxe.numpy() > 0.7 : # if % > 0.7
                 test = result.boxes.xyxy.numpy()
                 centre.append([round((test[pointer][2]+test[pointer][0])/2), round((test[pointer][3]+test[pointer][1])/2)])
             
                 pointer += 1
-    
-    for milieu in data:
-        for c in centre:
-            p = abs(milieu[0]-c[0])+ abs(milieu[1]-c[1])
-    
-    cropImage = Image.open(img) #Load PIL Image
-    rd = randrange(len(centre)) #Random center
+   
     square = 150                #Lenght of the square
 
+    i = 0
+    for cen in centre :
+        cropImage = Image.open(img)
+        box = (cen[0]-square, cen[1]-square, cen[0]+square, cen[1]+square)
+        cropImage = cropImage.crop(box)
+        cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
+        
+        i += 1
+    
+    modify_global_iteration()
+
+    cropImage = Image.open(img) #Load PIL Image
+    rd = random.randrange(len(centre)) #Random center
     box = (centre[rd][0]-square, centre[rd][1]-square, centre[rd][0]+square, centre[rd][1]+square)
 
     cropImage = cropImage.crop(box)
@@ -325,23 +334,43 @@ def apply_crop(img_path: str):
 
 # letter.
 def apply_letter(yourname: str, img_path: str):
+    liste_images = []
+    image_used =[]
+
     def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, taille=150):
         # Créer un tableau avec les valeurs de la lettre
         tableau_lettre = np.array([[int(pixel) for pixel in ligne] for ligne in lettre])
-
-        # Remplacer les cases noires par une image (remplacez 'votre_image.png' par le chemin de votre image)
-        image_path = 'ressources/myimage_cropped8.jpg'
-        image = Image.open(image_path)
-        image = image.resize((taille, taille))
-        image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
 
         # Créer une image en utilisant imshow
         for i in range(tableau_lettre.shape[0]):
             for j in range(tableau_lettre.shape[1]):
                 if tableau_lettre[i, j] == 1:
-                    # Placer l'image dans la case noire
-                    ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
 
+                    if liste_images:
+                    # Générer un indice aléatoire
+                        indice_aleatoire = random.randint(0, len(liste_images) - 1)
+
+                        #image_path = '/content/image.jpg'
+                        image = Image.open("app/bib/"+liste_images[indice_aleatoire])
+                        image = image.resize((taille, taille))
+                        image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+                        # Placer l'image dans la case noire
+                        ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
+                        image_used.append(liste_images[indice_aleatoire])
+                        liste_images.remove(liste_images[indice_aleatoire])
+
+                    else: 
+                        indice_aleatoire = random.randint(0, len(image_used) - 1)
+
+                        #image_path = '/content/image.jpg'
+                        image = Image.open("app/bib/"+image_used[indice_aleatoire])
+                        image = image.resize((taille, taille))
+                        image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+                        # Placer l'image dans la case noire
+                        ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)                  
+                
         # Ajouter des lignes de quadrillage
         ax.set_xticks(np.arange( -0.5, position_x + len(lettre[0]) * taille - 0.5, taille), minor=True)
         ax.set_yticks(np.arange(- 0.5, position_y + len(lettre) * taille - 0.5, taille), minor=True)
@@ -355,20 +384,35 @@ def apply_letter(yourname: str, img_path: str):
 
     # Créer une figure et un axe une seule fois pour afficher toutes les lettres du mot
     fig, ax = plt.subplots()
-
+    liste_images = os.listdir("app/bib")
     # Parcourt chaque lettre dans le mot et affiche chaque lettre sous forme de pixels
     for lettre in mot.upper():  # Convertit toutes les lettres en majuscules
+        print(lettre)
         if lettre in lettres:
             afficher_lettre_en_pixels_avec_quadrillage(lettres[lettre], position_x, position_y)
-            position_x += len(lettres[lettre][0]) * 150  # Ajuster la position pour la lettre suivante
+            position_x += len(lettres[lettre][0]) * 150 + 200  # Ajuster la position pour la lettre suivante
         else:
             print("Lettre non prise en charge:", lettre)
-    plt.savefig(img_path)
+
+    plt.savefig(img_path) 
+    reset_global_iteration()
+
 
 # Deletes the file at the specified path.
 def remove_file(path: str):
     os.unlink(path)
 
+def remove_all(path: str):
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+
+def modify_global_iteration():
+    global iteration
+    iteration += 1
+
+def reset_global_iteration():
+    global iteration
+    iteration = 0
 
 # Global exception handler that catches all exceptions not handled by specific exception handlers.
 @app.exception_handler(Exception)
