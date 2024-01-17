@@ -274,7 +274,7 @@ async def get_letter(yourname: str, background_tasks: BackgroundTasks):
     apply_letter(yourname, img_path)
     
     # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_all, "app/bib")
+    #background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
     return FileResponse(img_path)
 
@@ -308,7 +308,7 @@ def apply_crop(img_path: str):
         for boxe in result.boxes.conf:
             if boxe.numpy() > 0.7 : # if % > 0.7
                 test = result.boxes.xyxy.numpy()
-                centre.append([round((test[pointer][2]+test[pointer][0])/2), round((test[pointer][3]+test[pointer][1])/2)])
+                centre.append([round((test[pointer][2]+test[pointer][0])/2), round(test[pointer][1])])
             
                 pointer += 1
    
@@ -317,7 +317,7 @@ def apply_crop(img_path: str):
     i = 0
     for cen in centre :
         cropImage = Image.open(img)
-        box = (cen[0]-square, cen[1]-square, cen[0]+square, cen[1]+square)
+        box = (cen[0]-square, cen[1], cen[0]+square, cen[1]+2*square)
         cropImage = cropImage.crop(box)
         cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
         
@@ -327,7 +327,7 @@ def apply_crop(img_path: str):
 
     cropImage = Image.open(img) #Load PIL Image
     rd = random.randrange(len(centre)) #Random center
-    box = (centre[rd][0]-square, centre[rd][1]-square, centre[rd][0]+square, centre[rd][1]+square)
+    box = (centre[rd][0]-square, centre[rd][1], centre[rd][0]+square, centre[rd][1]+2*square)
 
     cropImage = cropImage.crop(box)
     cropImage.save(img_path)
