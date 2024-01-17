@@ -316,6 +316,12 @@ def apply_crop(img_path: str):
 
     i = 0
     for cen in centre :
+        if (cen[0]-square) < 0:
+            cen[0] = cen[0] + -1*(cen[0]-square)
+        if (cen[0]+square) > w:
+            cen[0] = cen[0] - -1*(w-(cen[0]+square))
+        if cen[1]+2*square > h:
+            cen[1] = cen[1] + -1*(h-(cen[1]+2*square))
         cropImage = Image.open(img)
         box = (cen[0]-square, cen[1], cen[0]+square, cen[1]+2*square)
         cropImage = cropImage.crop(box)
