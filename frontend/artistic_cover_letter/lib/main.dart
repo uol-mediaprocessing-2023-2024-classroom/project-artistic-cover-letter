@@ -38,8 +38,13 @@ class _MyAppState extends State<MyApp> {
       title: 'Artistic Cover Letter',
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        scaffoldBackgroundColor: const Color(0xAAf4f9ff),
+        colorScheme: ColorScheme.fromSeed(
+          onSurface: Colors.white,
+          onPrimaryContainer: Colors.white,
+          seedColor: Colors.black,
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 134, 117, 117),
+        //const Color(0xAAf4f9ff),
       ),
       home: isLoggedIn ? const DashboardPage() : const HomePage(),
     );

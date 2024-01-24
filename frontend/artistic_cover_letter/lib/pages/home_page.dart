@@ -75,9 +75,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           const Text(
-                            "Build your artistic \ncollage now",
+                            "Build your artistic \nCollage now",
                             style: TextStyle(
-                              fontSize: 75,
+                              fontSize: 80,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                           InkWell(
                             onTap: () => _navigateToLoginPage(context),
                             child: const Card(
-                              color: Colors.blue,
+                              color: Color.fromARGB(255, 236, 138, 131),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 60.0,
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
             right: 0.0,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              color: const Color(0xAAf4f9ff),
+              color: Colors.white.withOpacity(0.3), // Color(0xAAf4f9ff),
               child: Row(
                 children: [
                   IconButton(
@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                   const Spacer(),
                   TextButton(
                     child: const Text(
-                      "ANMELDEN",
+                      "Sign In",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                       ),

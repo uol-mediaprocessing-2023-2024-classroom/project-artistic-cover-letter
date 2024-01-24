@@ -36,7 +36,6 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
           selectedImages.add(randomImage);
         }
       }
-
       widget.onSelectionDone(selectedImages);
     }
   }
@@ -63,8 +62,20 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
                   title: Expanded(
                     child: TextField(
                       controller: _numberController,
-                      decoration:
-                          const InputDecoration(labelText: 'Amount of images'),
+                      decoration: const InputDecoration(
+                        labelText: 'Amount of images',
+                        border: OutlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.black, width: 2.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
                       keyboardType: TextInputType.number,
                       enabled: _isAutoSelectEnabled,
                     ),
