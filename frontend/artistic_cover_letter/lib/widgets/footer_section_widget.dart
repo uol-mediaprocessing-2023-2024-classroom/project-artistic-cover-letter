@@ -6,12 +6,21 @@ class FooterSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blueGrey[900],
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            const Color.fromARGB(255, 209, 217, 241).withOpacity(0.5),
+            const Color(0xAA0069FF),
+          ],
+        ),
+      ),
       padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 16.0),
       child: const Column(
         children: [
           Text(
-            'Photo Collage App',
+            'Artistic Cover Letter',
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
@@ -28,7 +37,7 @@ class FooterSection extends StatelessWidget {
           ),
           SizedBox(height: 16.0),
           Text(
-            'All rights reserved ©2023 Photo Collage App',
+            'All rights reserved ©2024 Photo Collage',
             style: TextStyle(
               color: Colors.white54,
             ),
