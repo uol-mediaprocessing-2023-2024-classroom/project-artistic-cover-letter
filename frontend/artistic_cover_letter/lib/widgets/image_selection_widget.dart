@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ImageSelectionWidget extends StatefulWidget {
   final Function(List<dynamic>) onSelectionDone;
@@ -45,7 +46,7 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
     return Column(
       children: [
         CheckboxListTile(
-          title: const Text('select automatically'),
+          title: const Text('randomly select images'),
           value: _isAutoSelectEnabled,
           onChanged: (bool? value) {
             setState(() => _isAutoSelectEnabled = value ?? false);
@@ -62,26 +63,28 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
                   title: Expanded(
                     child: TextField(
                       controller: _numberController,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                         labelText: 'Amount of images',
+                        labelStyle: TextStyle(color: Colors.white),
                         border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 2.0),
-                        ),
+                        errorStyle: TextStyle(color: Colors.redAccent),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 1.0,
-                          ),
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                       ),
                       keyboardType: TextInputType.number,
                       enabled: _isAutoSelectEnabled,
+                      maxLength: 2,
                     ),
                   ),
                   trailing: ElevatedButton(
                     onPressed: _isAutoSelectEnabled ? _handleAutoSelect : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 20),
+                      textStyle: const TextStyle(fontSize: 18),
+                    ),
                     child: const Text('Apply'),
                   ),
                 ),

@@ -20,7 +20,7 @@ class _GalleryWidgetState extends State<GalleryWidget> {
 
   Future<void> _loadImages() async {
     try {
-      var images = await _imageService.loadImages('your_cldId', 0);
+      var images = await _imageService.loadImages('your_cldId', 0, 80);
       setState(() {
         _images = images;
       });

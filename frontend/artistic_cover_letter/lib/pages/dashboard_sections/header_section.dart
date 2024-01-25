@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class HeaderWidget extends StatelessWidget {
+class HeaderSection extends StatelessWidget {
   final String? username;
   final VoidCallback onLogout;
 
-  const HeaderWidget({
+  const HeaderSection({
     Key? key,
     required this.username,
     required this.onLogout,

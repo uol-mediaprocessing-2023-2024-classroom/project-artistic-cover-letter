@@ -3,7 +3,6 @@ import 'package:artistic_cover_letter/widgets/responsive_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import '../widgets/footer_section_widget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -47,124 +46,137 @@ class _LoginPageState extends State<LoginPage> {
   Widget desktopView(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
+        clipBehavior: Clip.hardEdge,
+        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
+        child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 50,
-              ),
-              child: Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Flexible(
-                        flex: 2,
-                        child: Image(
-                          fit: BoxFit.fitHeight,
-                          image: AssetImage('assets/images/home01.png'),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Card(
-                          elevation: 1.0,
-                          color: Colors.white,
-                          margin: const EdgeInsets.all(14),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 20,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                const Image(
-                                  fit: BoxFit.contain,
-                                  image: AssetImage('assets/logos/logo.png'),
-                                ),
-                                const Text(
-                                  "Welcome",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                const SizedBox(height: 40),
-                                TextField(
-                                  controller: _emailController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Email',
-                                    hintText: 'Enter your email',
-                                  ),
-                                  keyboardType: TextInputType.emailAddress,
-                                ),
-                                const SizedBox(height: 8),
-                                TextField(
-                                  controller: _passwordController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Password',
-                                    hintText: 'Enter your password',
-                                  ),
-                                  obscureText: true,
-                                ),
-                                const SizedBox(height: 40),
-                                errorMessage.isNotEmpty
-                                    ? Text(
-                                        errorMessage,
-                                        style: const TextStyle(
-                                          color: Colors.red,
-                                        ),
-                                      )
-                                    : const SizedBox(),
-                                const SizedBox(height: 40),
-                                _awaitingLoginResponse
-                                    ? const CircularProgressIndicator()
-                                    : InkWell(
-                                        onTap: () {
-                                          _handleLogin().then((value) {
-                                            if (value) {
-                                              _navigateToDashboardPage(context);
-                                            } else {
-                                              setState(() {
-                                                errorMessage =
-                                                    "Invalid Credentials please try again";
-                                              });
-                                            }
-                                          });
-                                        },
-                                        child: const Card(
-                                          color: Colors.blue,
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 60.0,
-                                              vertical: 16,
-                                            ),
-                                            child: Text(
-                                              "Login",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                              ],
-                            ),
+            Expanded(
+              flex: 2,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 300),
+                padding: const EdgeInsets.all(100.0),
+                child: Card(
+                  elevation: 3.0,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 40.0,
+                      horizontal: 32.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Log in to your account",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 40),
+                        TextField(
+                          controller: _emailController,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            labelText: 'Email Address',
+                            hintText: 'Enter your email',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            border: OutlineInputBorder(),
+                            errorStyle: TextStyle(color: Colors.red),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                            helperStyle: TextStyle(
+                              color: Colors.white70,
+                            ),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _passwordController,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            hintText: 'Enter your password',
+                            errorText:
+                                errorMessage.isNotEmpty ? errorMessage : null,
+                            labelStyle: const TextStyle(color: Colors.grey),
+                            border: const OutlineInputBorder(),
+                            errorStyle: const TextStyle(color: Colors.red),
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            errorBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                            helperStyle: const TextStyle(
+                              color: Colors.white70,
+                            ),
+                          ),
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 40),
+                        _awaitingLoginResponse
+                            ? const Center(child: CircularProgressIndicator())
+                            : Center(
+                                child: InkWell(
+                                  onTap: () {
+                                    _handleLogin().then((value) {
+                                      if (value) {
+                                        _navigateToDashboardPage(context);
+                                      } else {
+                                        setState(() {
+                                          errorMessage =
+                                              "Invalid Credentials please try again";
+                                        });
+                                      }
+                                    });
+                                  },
+                                  child: const Card(
+                                    color: Color(0XAA002C9B),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 150.0,
+                                        vertical: 25,
+                                      ),
+                                      child: Text(
+                                        "Login",
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
-            const FooterSection(),
+            const Expanded(
+              flex: 3, // Take the other half of the screen space
+              child: Image(
+                color: Colors.black12,
+                fit: BoxFit.fitWidth,
+                image: AssetImage('assets/images/home04.png'),
+              ),
+            ),
           ],
         ),
       ),

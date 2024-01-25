@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-class PhotoExplorerSection extends StatelessWidget {
-  const PhotoExplorerSection({
-    super.key,
-    required this.currentGallery,
-  });
+class ImageGallerySection extends StatelessWidget {
+  final List<dynamic> currentGallery;
+  final Function(dynamic) onImageTap;
 
-  final List currentGallery;
+  const ImageGallerySection({
+    Key? key,
+    required this.currentGallery,
+    required this.onImageTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,6 @@ class PhotoExplorerSection extends StatelessWidget {
         ),
       ),
       child: GridView.builder(
-        padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           crossAxisSpacing: 8,
@@ -27,20 +28,13 @@ class PhotoExplorerSection extends StatelessWidget {
         ),
         itemCount: currentGallery.length,
         itemBuilder: (context, index) {
-          return GridTile(
-            child: InkWell(
-              onTap: () {
-                /*                   setState(() {
-                  _selectedImages.add(
-                    _currentGallery[index],
-                  );
-                  _selectedImages =
-                      _selectedImages.toSet().toList();
-                }); 
-             */
-              },
+          var image = currentGallery[index];
+          return InkWell(
+            onTap: () => onImageTap(image),
+            child: Card(
+              clipBehavior: Clip.hardEdge,
               child: Image.network(
-                currentGallery[index]['url'],
+                image['url'],
                 fit: BoxFit.cover,
               ),
             ),

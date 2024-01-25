@@ -10,6 +10,9 @@ class ImageDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.memory(imageData);
+    return Image.memory(
+      imageData,
+      fit: BoxFit.fill,
+    );
   }
 }

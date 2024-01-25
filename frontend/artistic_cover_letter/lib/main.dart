@@ -1,10 +1,13 @@
 import 'package:artistic_cover_letter/pages/dashboard.dart';
 import 'package:artistic_cover_letter/pages/home_page.dart';
+import 'package:artistic_cover_letter/utils/constants.dart';
+import 'package:artistic_cover_letter/utils/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
   runApp(const MyApp());
 }
 
@@ -41,10 +44,9 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           onSurface: Colors.white,
           onPrimaryContainer: Colors.white,
-          seedColor: Colors.black,
+          seedColor: Colors.blue,
         ),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 134, 117, 117),
-        //const Color(0xAAf4f9ff),
+        scaffoldBackgroundColor: kBackgroundColor,
       ),
       home: isLoggedIn ? const DashboardPage() : const HomePage(),
     );
