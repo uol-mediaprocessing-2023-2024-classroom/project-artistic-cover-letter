@@ -2,7 +2,7 @@ import os
 import glob
 import ssl
 import urllib.request
-import  cv2
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -10,7 +10,7 @@ import random
 from fastapi import FastAPI, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
-from PIL import Image, ImageFilter
+from PIL import Image
 from ultralytics import YOLO
 
 iteration = 0
@@ -237,6 +237,7 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     Endpoint to retrieve a cropped version of an image.
     The image is fetched from a constructed URL and then processed to apply a crop effect.
     """
+    global iteration
     img_path = f"app/bib/{imgId}.jpg"
     image_url = f"https://cmp.photoprintit.com/api/photos/{imgId}.org?size=original&errorImage=false&cldId={cldId}&clientVersion=0.0.1-medienVerDemo"
 
@@ -245,8 +246,9 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
 
     # Schedule the image file to be deleted after the response is sent
     background_tasks.add_task(remove_file, img_path)
-    #background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
+    img_path = f"app/bib/"+str(iteration)+"_0.jpg"
+    iteration += 1
     return FileResponse(img_path)
 
 @app.get("/get-letter/{yourname}")
@@ -262,16 +264,29 @@ async def get_letter(yourname: str, background_tasks: BackgroundTasks):
     return FileResponse(img_path)
 
 @app.get("/get-del/{index}")
-async def get_letter(index: str):
+async def get_del(index: str):
 
-    for filename in glob.glob("app/bib/"+str(index)+"*"):
+    for filename in glob.glob("app/bib/"+index+"*"):
         os.remove(filename)   
 
 @app.get("/delete")
-async def get_letter(background_tasks: BackgroundTasks):
-  
-    # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_all, "app/bib")
+async def delete():
+
+    global img_letter
+    path= "app/bib"
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
+    img_letter = []
+    
+@app.get("/edit/{img}")
+async def edit(img :str):
+    global img_letter
+    
+    (i, nb)  = img.split("_")
+    img_letter[i] = i+"_"+nb
+
+    return FileResponse("app/bib/"+img_letter[i])
+
 
 # Downloads an image from the specified URL and saves it to the given path.
 def download_image(image_url: str, img_path: str):
@@ -330,7 +345,7 @@ def apply_crop(img_path: str):
         cropImage.save("app/bib/"+str(iteration)+"_0.jpg")
         cropImage.save(img_path)
     img_letter.append(str(iteration)+"_0.jpg")    
-    iteration += 1
+    #iteration += 1
 
 # letter.
 def apply_letter(yourname: str, img_path: str):
