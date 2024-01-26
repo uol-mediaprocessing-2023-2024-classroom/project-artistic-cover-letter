@@ -245,9 +245,11 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     apply_crop(img_path)
 
     # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_file, img_path)
+    #background_tasks.add_task(remove_file, img_path)
     # Send the cropped image file as a response
     img_path = f"app/bib/"+str(iteration)+"_0.jpg"
+    #for filename in glob.glob("app/bib/"+iteration+"*"):
+    #    os.remove(filename) 
     iteration += 1
     return FileResponse(img_path)
 
@@ -265,9 +267,12 @@ async def get_letter(yourname: str, background_tasks: BackgroundTasks):
 
 @app.get("/get-del/{index}")
 async def get_del(index: str):
+    global img_letter
 
     for filename in glob.glob("app/bib/"+index+"*"):
-        os.remove(filename)   
+        os.remove(filename)
+    global [index] = 0
+       
 
 @app.get("/delete")
 async def delete():
@@ -335,15 +340,15 @@ def apply_crop(img_path: str):
             cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
         
             i += 1
-        cropImage = Image.open(img) #Load PIL Image
-        box = (centre[0][0]-square, centre[0][1], centre[0][0]+square, centre[0][1]+2*square)
+#        cropImage = Image.open(img) #Load PIL Image
+#        box = (centre[0][0]-square, centre[0][1], centre[0][0]+square, centre[0][1]+2*square)
 
-        cropImage = cropImage.crop(box)
-        cropImage.save(img_path)
+#        cropImage = cropImage.crop(box)
+#        cropImage.save(img_path)
     else:
         cropImage = Image.open("ressources/placeholder.jpg")
         cropImage.save("app/bib/"+str(iteration)+"_0.jpg")
-        cropImage.save(img_path)
+#        cropImage.save(img_path)
     img_letter.append(str(iteration)+"_0.jpg")    
     #iteration += 1
 
@@ -401,6 +406,8 @@ def apply_letter(yourname: str, img_path: str):
     # Créer une figure et un axe une seule fois pour afficher toutes les lettres du mot
     fig, ax = plt.subplots()
     liste_images = img_letter
+    liste_images = [i for i in liste_images if i != 0]
+
     # Parcourt chaque lettre dans le mot et affiche chaque lettre sous forme de pixels
     for lettre in mot.upper():  # Convertit toutes les lettres en majuscules
         print(lettre)
