@@ -1,4 +1,5 @@
 import os
+import glob
 import ssl
 import urllib.request
 import  cv2
@@ -12,8 +13,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image, ImageFilter
 from ultralytics import YOLO
 
-
 iteration = 0
+img_letter = []
 app = FastAPI()
 
 # SSL configuration for HTTPS requests
@@ -230,24 +231,6 @@ lettres = {
     # Ajoutez d'autres lettres si nécessaire
 } # Letter 
 
-@app.get("/get-blur/{cldId}/{imgId}")
-async def get_blur(cldId: str, imgId: str, background_tasks: BackgroundTasks):
-    """
-    Endpoint to retrieve a blurred version of an image.
-    The image is fetched from a constructed URL and then processed to apply a blur effect.
-    """
-    img_path = f"app/bib/{imgId}.jpg"
-    image_url = f"https://cmp.photoprintit.com/api/photos/{imgId}.org?size=original&errorImage=false&cldId={cldId}&clientVersion=0.0.1-medienVerDemo"
-
-    download_image(image_url, img_path)
-    apply_blur(img_path)
-
-    # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_file, img_path)
-
-    # Send the blurred image file as a response
-    return FileResponse(img_path)
-
 @app.get("/get-crop/{cldId}/{imgId}")
 async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     """
@@ -261,7 +244,7 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     apply_crop(img_path)
 
     # Schedule the image file to be deleted after the response is sent
-    #background_tasks.add_task(remove_file, img_path)
+    background_tasks.add_task(remove_file, img_path)
     #background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
     return FileResponse(img_path)
@@ -269,29 +252,36 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
 @app.get("/get-letter/{yourname}")
 async def get_letter(yourname: str, background_tasks: BackgroundTasks):
 
-    img_path = f"app/bib/{yourname}.jpg"
+    img_path = f"app/collage/done.jpg"
     
     apply_letter(yourname, img_path)
     
     # Schedule the image file to be deleted after the response is sent
-    #background_tasks.add_task(remove_all, "app/bib")
+    background_tasks.add_task(remove_all, "app/bib")
     # Send the cropped image file as a response
     return FileResponse(img_path)
 
+@app.get("/get-del/{index}")
+async def get_letter(index: str):
+
+    for filename in glob.glob("app/bib/"+str(index)+"*"):
+        os.remove(filename)   
+
+@app.get("/delete")
+async def get_letter(background_tasks: BackgroundTasks):
+  
+    # Schedule the image file to be deleted after the response is sent
+    background_tasks.add_task(remove_all, "app/bib")
 
 # Downloads an image from the specified URL and saves it to the given path.
 def download_image(image_url: str, img_path: str):
     urllib.request.urlretrieve(image_url, img_path)
 
-# Opens the image from the given path and applies a box blur effect.
-def apply_blur(img_path: str):
-    blurImage = Image.open(img_path)
-    blurImage = blurImage.filter(ImageFilter.BoxBlur(10))
-    blurImage.save(img_path)
-
 # Opens the image from the given path and applies a crop effect.
 def apply_crop(img_path: str):
     img = (img_path)
+    global iteration
+    global img_letter
 
     # get the middle of the image
     data = []# y, x of center 
@@ -312,36 +302,41 @@ def apply_crop(img_path: str):
             
                 pointer += 1
    
-    square = 150                #Lenght of the square
+    square = 150 #Lenght of the square
 
     i = 0
-    for cen in centre :
-        if (cen[0]-square) < 0:
-            cen[0] = cen[0] + -1*(cen[0]-square)
-        if (cen[0]+square) > w:
-            cen[0] = cen[0] - -1*(w-(cen[0]+square))
-        if cen[1]+2*square > h:
-            cen[1] = cen[1] + -1*(h-(cen[1]+2*square))
-        cropImage = Image.open(img)
-        box = (cen[0]-square, cen[1], cen[0]+square, cen[1]+2*square)
-        cropImage = cropImage.crop(box)
-        cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
+    print(centre)   
+    if centre != []:
+        for cen in centre:
+            if (cen[0]-square) < 0:
+                cen[0] = cen[0] + -1*(cen[0]-square)
+            if (cen[0]+square) > w:
+                cen[0] = cen[0] - -1*(w-(cen[0]+square))
+            if cen[1]+2*square > h:
+                cen[1] = cen[1] + 1*(h-(cen[1]+2*square))
+            cropImage = Image.open(img)
+            box = (cen[0]-square, cen[1], cen[0]+square, cen[1]+2*square)
+            cropImage = cropImage.crop(box)
+            cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
         
-        i += 1
-    
-    modify_global_iteration()
+            i += 1
+        cropImage = Image.open(img) #Load PIL Image
+        box = (centre[0][0]-square, centre[0][1], centre[0][0]+square, centre[0][1]+2*square)
 
-    cropImage = Image.open(img) #Load PIL Image
-    rd = random.randrange(len(centre)) #Random center
-    box = (centre[rd][0]-square, centre[rd][1], centre[rd][0]+square, centre[rd][1]+2*square)
-
-    cropImage = cropImage.crop(box)
-    cropImage.save(img_path)
+        cropImage = cropImage.crop(box)
+        cropImage.save(img_path)
+    else:
+        cropImage = Image.open("ressources/placeholder.jpg")
+        cropImage.save("app/bib/"+str(iteration)+"_0.jpg")
+        cropImage.save(img_path)
+    img_letter.append(str(iteration)+"_0.jpg")    
+    iteration += 1
 
 # letter.
 def apply_letter(yourname: str, img_path: str):
     liste_images = []
     image_used =[]
+    global img_letter
 
     def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, taille=150):
         # Créer un tableau avec les valeurs de la lettre
@@ -390,7 +385,7 @@ def apply_letter(yourname: str, img_path: str):
 
     # Créer une figure et un axe une seule fois pour afficher toutes les lettres du mot
     fig, ax = plt.subplots()
-    liste_images = os.listdir("app/bib")
+    liste_images = img_letter
     # Parcourt chaque lettre dans le mot et affiche chaque lettre sous forme de pixels
     for lettre in mot.upper():  # Convertit toutes les lettres en majuscules
         print(lettre)
@@ -401,8 +396,8 @@ def apply_letter(yourname: str, img_path: str):
             print("Lettre non prise en charge:", lettre)
 
     plt.savefig(img_path) 
-    reset_global_iteration()
-
+    global iteration
+    iteration = 0
 
 # Deletes the file at the specified path.
 def remove_file(path: str):
@@ -412,13 +407,9 @@ def remove_all(path: str):
     for f in os.listdir(path):
         os.remove(os.path.join(path, f))
 
-def modify_global_iteration():
-    global iteration
-    iteration += 1
-
-def reset_global_iteration():
-    global iteration
-    iteration = 0
+def delete(path= "app/bib"):
+    for f in os.listdir(path):
+        os.remove(os.path.join(path, f))
 
 # Global exception handler that catches all exceptions not handled by specific exception handlers.
 @app.exception_handler(Exception)
