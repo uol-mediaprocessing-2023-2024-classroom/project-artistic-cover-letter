@@ -1,8 +1,3 @@
-https://groupeesaip-my.sharepoint.com/:p:/g/personal/rdesjames_ing2024_esaip_org/EWZed0ET8mVNn6zmcA1LkWgBNr-rhPTBTjHLii_A0riNqw?e=YKMHeq
-
-
-
-
 # 📸 Artistic Cover Letter 🚀
 
 ![MEDIA (1)](https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/de1780de-5031-48e8-a0b2-dfaee061e3d4)
