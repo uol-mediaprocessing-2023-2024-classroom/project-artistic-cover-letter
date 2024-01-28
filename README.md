@@ -2,7 +2,7 @@
 
 ![MEDIA (1)](https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/de1780de-5031-48e8-a0b2-dfaee061e3d4)
 
-Welcome to our project! This guide will help you set up and start the project on your local machine, and also provide you with information on how to access and run our comprehensive documentation.
+Welcome to our innovative project that focuses on creating personalized collages using words and photos. This application allows users to input a specific word, and it then cleverly utilizes YOLOv8 for image cropping and processing. Through a series of algorithms, the photos are arranged to form the shape of the entered word, resulting in a unique and artistic collage. Users can then download their custom-made collage. This README guide will help you set up and start the project on your local machine, and also provide you with information on how to access and run our comprehensive documentation.
 
 ## Getting Started
 
