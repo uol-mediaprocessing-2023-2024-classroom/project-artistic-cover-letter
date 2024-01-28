@@ -4,6 +4,10 @@
 
 Welcome to our innovative project that focuses on creating personalized collages using words and photos. This application allows users to input a specific word, and it then cleverly utilizes YOLOv8 for image cropping and processing. Through a series of algorithms, the photos are arranged to form the shape of the entered word, resulting in a unique and artistic collage. Users can then download their custom-made collage. This README guide will help you set up and start the project on your local machine, and also provide you with information on how to access and run our comprehensive documentation.
 
+
+https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/7d885733-b0f3-44ec-afa9-86995748da81
+
+
 ## Getting Started
 
 This project is divided into two main parts: the backend and the frontend, with detailed documentation available for our development approaches.
@@ -17,6 +21,9 @@ This project is divided into two main parts: the backend and the frontend, with 
 3. **Start the Backend Server**: Once dependencies are installed, start the backend server.
 
 ### Frontend Setup (Flutter)
+
+
+![Bildschirmfoto 2024-01-28 um 05 28 57](https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/b352d5e1-07e8-4135-aa37-59f2c8e07100)
 
 1. **Install Flutter**: Download and install Flutter from the [official website](https://flutter.dev/docs/get-started/install).
 
