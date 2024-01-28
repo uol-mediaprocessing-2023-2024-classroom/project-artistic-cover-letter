@@ -1,13 +1,13 @@
+import 'package:artistic_cover_letter/services/auth_service.dart';
+import 'package:artistic_cover_letter/repositories/client_repository.dart';
+import 'package:artistic_cover_letter/utils/injection.dart';
 import 'package:flutter/material.dart';
 
 class HeaderSection extends StatelessWidget {
-  final String? username;
-  final VoidCallback onLogout;
+  final clientService = getIt<ClientRepository>();
 
-  const HeaderSection({
+  HeaderSection({
     Key? key,
-    required this.username,
-    required this.onLogout,
   }) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class HeaderSection extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            "Welcome ${username ?? ""} ",
+            "Welcome ${clientService.firstName} ",
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -26,7 +26,7 @@ class HeaderSection extends StatelessWidget {
           const Spacer(),
           ElevatedButton.icon(
             clipBehavior: Clip.none,
-            onPressed: onLogout,
+            onPressed: () => getIt.get<AuthService>().logout(),
             icon: const Icon(Icons.logout, size: 24.0),
             label: const Text('Logout', textAlign: TextAlign.left),
           )

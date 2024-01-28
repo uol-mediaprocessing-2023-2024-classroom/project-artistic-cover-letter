@@ -1,12 +1,19 @@
 import 'dart:convert';
+import 'package:artistic_cover_letter/repositories/app_repository.dart';
+import 'package:artistic_cover_letter/services/album_service.dart';
+import 'package:artistic_cover_letter/repositories/client_repository.dart';
+import 'package:artistic_cover_letter/utils/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
+  final _albumService = getIt.get<AlbumService>();
+  final _clientService = getIt.get<ClientRepository>();
+  final _appRepository = getIt.get<AppRepository>();
+
   Future<bool> login(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
-
     try {
       final response = await http.post(
           Uri.parse('https://cmp.photoprintit.com/api/account/session/'),
@@ -22,23 +29,32 @@ class AuthService {
           }));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        _albumService.loadImages(
+          cldId: data['session']['cldId'],
+          startIndex: 0,
+          limit: 100,
+        );
+
         // Save session data to SharedPreferences
+        _clientService.updateCredentials(
+          clientID: data['session']['cldId'],
+          firstName: data['user']['firstname'],
+        );
         await prefs.setString('cldId', data['session']['cldId']);
-        await prefs.setString('userName', data['user']['firstname']);
+        await prefs.setString('firstName', data['user']['firstname']);
         await prefs.setBool('isLoggedIn', true);
         return true;
         // Handle successful login
       } else {
-        // Handle error
         return false;
       }
     } catch (e) {
-      // Handle exception
+      debugPrint(e.toString());
+      return false;
     }
-    return false;
   }
 
-  Future<bool> logout() async {
+  Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
 
     try {
@@ -52,16 +68,12 @@ class AuthService {
       );
       if (response.statusCode == 204 || response.statusCode == 200) {
         await prefs.clear();
-        return true;
+        _appRepository.setLogout(true);
       } else {
         // Handle error
-        return false;
       }
     } catch (e) {
       debugPrint(e.toString());
     }
-    // Construct logout request
-    // ...
-    return false;
   }
 }

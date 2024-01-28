@@ -26,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text,
       _passwordController.text,
     );
-
     setState(() {
       _awaitingLoginResponse = false;
     });
@@ -64,8 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                       horizontal: 32.0,
                     ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         const Text(
                           "Log in to your account",
@@ -133,30 +131,32 @@ class _LoginPageState extends State<LoginPage> {
                             : Center(
                                 child: InkWell(
                                   onTap: () {
-                                    _handleLogin().then((value) {
-                                      if (value) {
-                                        _navigateToDashboardPage(context);
-                                      } else {
-                                        setState(() {
-                                          errorMessage =
-                                              "Invalid Credentials please try again";
-                                        });
-                                      }
-                                    });
+                                    _handleLogin().then(
+                                      (value) {
+                                        if (value) {
+                                          _navigateToDashboardPage(context);
+                                        } else {
+                                          setState(() {
+                                            errorMessage =
+                                                "Invalid Credentials please try again";
+                                          });
+                                        }
+                                      },
+                                    );
                                   },
-                                  child: const Card(
-                                    color: Color(0XAA002C9B),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 150.0,
-                                        vertical: 25,
-                                      ),
-                                      child: Text(
-                                        "Login",
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
+                                  child: const SizedBox(
+                                    width: double.maxFinite,
+                                    child: Card(
+                                      color: Color(0XAA002C9B),
+                                      child: Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 25),
+                                        child: Text(
+                                          "Login",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
                                         ),
                                       ),
                                     ),
