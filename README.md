@@ -1,4 +1,4 @@
-# Artistic Cover Letter
+# 🤳🏽Artistic Cover Letter🚀
 
 Welcome to our project! This guide will help you set up and start the project on your local machine, and also provide you with information on how to access and run our comprehensive documentation.
 
@@ -47,5 +47,3 @@ If you encounter any problems or have queries, please consult our FAQ section or
 Thank you for your interest and contributions to our project!
 
 ---
-
-This README provides a comprehensive guide, including instructions for running the Jupyter Notebook documentation. Remember to replace `{backend-readme-link}` with the actual link to your backend README file.
