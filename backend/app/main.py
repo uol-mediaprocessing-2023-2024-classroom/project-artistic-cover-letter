@@ -16,8 +16,8 @@ from ressources.letters import Letters
 iteration = 0
 img_letter = []
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/bib"), name="static")
-app.mount("/static", StaticFiles(directory="app/collage"), name="static")
+app.mount("/static", StaticFiles(directory="temp_images"), name="static")
+app.mount("/static", StaticFiles(directory="collage"), name="static")
 # SSL configuration for HTTPS requests
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -53,7 +53,7 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
     """
     global iteration
     
-    img_path = f"app/bib/{imgId}.jpg"
+    img_path = f"temp_images/{imgId}.jpg"
     image_url = f"https://cmp.photoprintit.com/api/photos/{imgId}.org?size=original&errorImage=false&cldId={cldId}&clientVersion=0.0.1-medienVerDemo"
 
     download_image(image_url, img_path)
@@ -70,12 +70,12 @@ async def get_crop(cldId: str, imgId: str, background_tasks: BackgroundTasks):
 @app.get("/create-collage/{collage_name}/{img_names}")
 async def get_letter(collage_name: str,img_names: str, background_tasks: BackgroundTasks):
 
-    img_path = f"app/collage/collage.jpg"
+    img_path = f"collage/collage.jpg"
     
     #apply_letter(yourname, img_path)
     create_collage(collage_name, img_names)
     # Schedule the image file to be deleted after the response is sent
-    background_tasks.add_task(remove_all, "app/bib")
+    background_tasks.add_task(remove_all, "temp_images")
     # Send the cropped image file as a response
     return FileResponse(img_path)
 
@@ -125,13 +125,13 @@ def apply_crop(img_path: str):
             cropImage = Image.open(img)
             box = (cen[0]-square, cen[1], cen[0]+square, cen[1]+2*square)
             cropImage = cropImage.crop(box)
-            cropImage.save("app/bib/"+str(iteration)+"_"+str(i)+".jpg")
+            cropImage.save("temp_images/"+str(iteration)+"_"+str(i)+".jpg")
             url = f"http://localhost:8000/static/{str(iteration)}_{str(i)}.jpg"
             cropped_image_urls.append(url)
             i += 1
     else:
         cropImage = Image.open("ressources/placeholder.jpg")
-        cropImage.save("app/bib/"+str(iteration)+"_0.jpg")
+        cropImage.save("temp_images/"+str(iteration)+"_0.jpg")
         url = f"http://localhost:8000/static/{str(iteration)}_0.jpg"
         cropped_image_urls.append(url)
     img_letter.append(str(iteration)+"_0.jpg")
@@ -140,7 +140,7 @@ def apply_crop(img_path: str):
 
 # Creates a collage from the given images name and collage name.
 def create_collage(collage_name: str, img_names: str):
-    img_path = f"app/collage/collage.jpg"
+    img_path = f"collage/collage.jpg"
     liste_images = img_names.split('-')
     image_used = []
 
@@ -166,7 +166,7 @@ def create_collage(collage_name: str, img_names: str):
                 if tableau_lettre[i, j] == 1:
                     if liste_images:
                         indice_aleatoire = random.randint(0, len(liste_images) - 1)
-                        image = Image.open("app/bib/" + liste_images[indice_aleatoire] + ".jpg")
+                        image = Image.open("temp_images/" + liste_images[indice_aleatoire] + ".jpg")
                         image = image.resize((taille, taille))
                         image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
 
@@ -175,7 +175,7 @@ def create_collage(collage_name: str, img_names: str):
                         liste_images.pop(indice_aleatoire)
                     else:
                         indice_aleatoire = random.randint(0, len(image_used) - 1)
-                        image = Image.open("app/bib/" + image_used[indice_aleatoire] + ".jpg")
+                        image = Image.open("temp_images/" + image_used[indice_aleatoire] + ".jpg")
                         image = image.resize((taille, taille))
                         image_tourne = image.transpose(Image.ADAPTIVE)
 
