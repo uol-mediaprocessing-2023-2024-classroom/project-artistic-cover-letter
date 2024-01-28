@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:artistic_cover_letter/repositories/images_repository.dart';
+import 'package:artistic_cover_letter/services/collage_service.dart';
+import 'package:artistic_cover_letter/utils/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,24 +23,20 @@ class ImageSelectionWidget extends StatefulWidget {
 class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
   bool _isAutoSelectEnabled = false;
   final TextEditingController _numberController = TextEditingController();
+  final imageRespository = getIt<ImagesRepository>();
+  final collageService = getIt<CollageService>();
   final Random _random = Random();
 
   void _handleAutoSelect() {
     if (_isAutoSelectEnabled) {
       int numberOfFiles = int.tryParse(_numberController.text) ?? 0;
-      List<dynamic> selectedImages = [];
-
-      // Assurez-vous que le nombre demandé n'est pas supérieur à la taille de la liste
-      numberOfFiles = min(numberOfFiles, widget.allImages.length);
-
-      while (selectedImages.length < numberOfFiles) {
-        int randomIndex = _random.nextInt(widget.allImages.length);
-        dynamic randomImage = widget.allImages[randomIndex];
-        if (!selectedImages.contains(randomImage)) {
-          selectedImages.add(randomImage);
-        }
+      imageRespository.clearImageLinks();
+      for (int i = 0; i < numberOfFiles; i++) {
+        int randomIndex =
+            _random.nextInt(imageRespository.albumContent.value.length);
+        dynamic randomImage = imageRespository.albumContent.value[randomIndex];
+        collageService.getCroppedImages(randomImage['id']);
       }
-      widget.onSelectionDone(selectedImages);
     }
   }
 
@@ -59,7 +58,6 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
                   vertical: 8.0,
                 ),
                 child: ListTile(
-                  visualDensity: VisualDensity.compact,
                   title: Expanded(
                     child: TextField(
                       controller: _numberController,
@@ -78,14 +76,40 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
                       maxLength: 2,
                     ),
                   ),
-                  trailing: ElevatedButton(
-                    onPressed: _isAutoSelectEnabled ? _handleAutoSelect : null,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 20),
-                      textStyle: const TextStyle(fontSize: 18),
+                  trailing: Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      width: 100,
+                      height: 50,
+                      child: Card(
+                        color: Colors.black,
+                        clipBehavior: Clip.hardEdge,
+                        child: InkWell(
+                          onTap: () => _numberController.text.isEmpty
+                              ? ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    elevation: 100.0,
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                      'Please enter a number of images',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : _handleAutoSelect(),
+                          hoverColor: const Color(0XAA002C9B),
+                          child: const Center(
+                            child: Text(
+                              "Apply",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    child: const Text('Apply'),
                   ),
                 ),
               )

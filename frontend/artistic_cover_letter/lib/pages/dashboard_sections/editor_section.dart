@@ -1,19 +1,16 @@
+import 'package:artistic_cover_letter/repositories/images_repository.dart';
+import 'package:artistic_cover_letter/services/collage_service.dart';
+import 'package:artistic_cover_letter/utils/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:artistic_cover_letter/widgets/image_selection_widget.dart';
 import 'package:flutter/services.dart';
 
 class EditorSection extends StatelessWidget {
   final TextEditingController editingController;
-  final Function(List<dynamic>) onSelectionDone;
-  final List<dynamic> allImages;
-  final Function generateCollage;
 
   const EditorSection({
     Key? key,
     required this.editingController,
-    required this.allImages,
-    required this.onSelectionDone,
-    required this.generateCollage,
   }) : super(key: key);
 
   @override
@@ -70,38 +67,38 @@ class EditorSection extends StatelessWidget {
               maxLength: 10,
             ),
             ImageSelectionWidget(
-              onSelectionDone: onSelectionDone,
-              allImages: allImages,
+              onSelectionDone: (List<dynamic> _) {},
+              allImages: const [],
             ),
             const SizedBox(height: 20),
-            Card(
-              elevation: BorderSide.strokeAlignOutside,
-              shadowColor: Colors.white,
-              clipBehavior: Clip.hardEdge,
-              color: const Color(0XAA002C9B),
-              child: InkWell(
-                enableFeedback: true,
-                splashColor: Colors.white,
-                hoverColor: Colors.black,
-                onTap: () => generateCollage(),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 50.0,
-                    vertical: 25,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.generating_tokens,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 10.0),
-                      Text(
-                        "Generate Collage",
-                        style: TextStyle(fontSize: 18.0, color: Colors.white),
-                      ),
-                    ],
+            SizedBox(
+              width: double.maxFinite,
+              child: Card(
+                elevation: BorderSide.strokeAlignOutside,
+                shadowColor: Colors.white,
+                clipBehavior: Clip.hardEdge,
+                color: const Color(0XAA002C9B),
+                child: InkWell(
+                  enableFeedback: true,
+                  splashColor: Colors.white,
+                  hoverColor: Colors.black,
+                  onTap: () => generateCollage(context),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.generating_tokens,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 10.0),
+                        Text(
+                          "Generate Collage",
+                          style: TextStyle(fontSize: 18.0, color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -110,6 +107,53 @@ class EditorSection extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> generateCollage(BuildContext context) async {
+    final collageService = getIt<CollageService>();
+    final imagesRepository = getIt<ImagesRepository>();
+    if (editingController.text.isNotEmpty &&
+        imagesRepository.cropImageLinks.value.isNotEmpty) {
+      final collageName = editingController.text;
+      final imagesNames = imagesRepository.cropImageLinks.value
+          .map((e) => e.first.split('/').last.split('.').first)
+          .join('-');
+      debugPrint(imagesNames);
+      await collageService.createCollage(
+        collageName: collageName,
+        imagesNames: imagesNames,
+      );
+    } else {
+      if (imagesRepository.cropImageLinks.value.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            elevation: 100.0,
+            backgroundColor: Colors.red,
+            content: Text(
+              'Please select images to generate collage',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            elevation: 100.0,
+            backgroundColor: Colors.red,
+            content: Text(
+              'Please enter collage name',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      }
+    }
   }
 }
 
