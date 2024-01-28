@@ -4,8 +4,10 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
-import random 
+import random
 from google.colab import files
+
+#creation of each letter
 
 lettres = {
     'A': [
@@ -192,54 +194,47 @@ lettres = {
         "0100",
         "1111"
     ]
-    # Ajoutez d'autres lettres si nécessaire
 }
 
-# Remplacer les cases noires par une image (remplacez 'votre_image.png' par le chemin de votre image)
+# create 2 lists one for all image and one for image that are already used
 liste_images = []
 image_used =[]
 
 def afficher_lettre_en_pixels_avec_quadrillage(lettre, position_x, position_y, taille=150):
-    # Créer un tableau avec les valeurs de la lettre
+    # create letter with black square
     tableau_lettre = np.array([[int(pixel) for pixel in ligne] for ligne in lettre])
 
-    # Créer une image en utilisant imshow
     for i in range(tableau_lettre.shape[0]):
         for j in range(tableau_lettre.shape[1]):
             if tableau_lettre[i, j] == 1:
-
+                #if the list_images is not empty we select picture on this list and add the picture on the letter and on the list image_used and remove from list_image
                 if liste_images:
-                # Générer un indice aléatoire
+                # Generate a random number for "index" in the list
                   indice_aleatoire = random.randint(0, len(liste_images) - 1)
 
                 # Sélectionner l'image correspondante à l'indice aléatoire
-                #image_path = liste_images[indice_aleatoire]
-
-                #image_path = '/content/image.jpg'
+                #select the picture
                   image = Image.open(liste_images[indice_aleatoire])
                   image = image.resize((taille, taille))
+                  #to get the image the right way round we must flip it
                   image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
-                # Placer l'image dans la case noire
+                # replace in the black square
                   ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
                   image_used.append(liste_images[indice_aleatoire])
                   liste_images.remove(liste_images[indice_aleatoire])
 
-                else: 
+                #else we take a picture on the list image_used
+                else:
                   indice_aleatoire = random.randint(0, len(image_used) - 1)
-                  print(indice_aleatoire)
-                # Sélectionner l'image correspondante à l'indice aléatoire
-                #image_path = liste_images[indice_aleatoire]
 
-                #image_path = '/content/image.jpg'
                   image = Image.open(image_used[indice_aleatoire])
                   image = image.resize((taille, taille))
                   image_tourne = image.transpose(Image.FLIP_TOP_BOTTOM)
-                # Placer l'image dans la case noire
                   ax.imshow(image_tourne, extent=(position_x + j*taille, position_x + (j+1)*taille, position_y + i*taille, position_y + (i+1)*taille), cmap='binary', vmin=0, vmax=1)
-                  
 
-                
-    # Ajouter des lignes de quadrillage
+
+
+    # create axes and turn off it
     ax.set_xticks(np.arange( -0.5, position_x + len(lettre[0]) * taille - 0.5, taille), minor=True)
     ax.set_yticks(np.arange(- 0.5, position_y + len(lettre) * taille - 0.5, taille), minor=True)
     ax.invert_yaxis()
@@ -261,11 +256,12 @@ for filename in uploaded.keys():
     print(f"Image téléchargée : {filename}")
 
 # Parcourt chaque lettre dans le mot et affiche chaque lettre sous forme de pixels
-for lettre in mot.upper():  # Convertit toutes les lettres en majuscules
+# capitalize all letters call the function to put letter in pixel with image inside
+for lettre in mot.upper(): 
     print(lettre)
     if lettre in lettres:
         afficher_lettre_en_pixels_avec_quadrillage(lettres[lettre], position_x, position_y)
-        position_x += len(lettres[lettre][0]) * 150 + 200  # Ajuster la position pour la lettre suivante
+        position_x += len(lettres[lettre][0]) * 150 + 200  #manages the arrangement of letters in relation to the preceding one 
     else:
         print("Lettre non prise en charge:", lettre)
 
