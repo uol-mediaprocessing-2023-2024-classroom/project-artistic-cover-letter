@@ -1,6 +1,6 @@
-# 🤳🏽Artistic Cover Letter🚀
+# 📸 Artistic Cover Letter 🚀
 
-![MEDIA](https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/3dfbaf80-3793-4d1b-8182-bb83070e4a7a)
+![MEDIA (1)](https://github.com/uol-mediaprocessing-2023-2024-classroom/project-artistic-cover-letter/assets/49067154/de1780de-5031-48e8-a0b2-dfaee061e3d4)
 
 Welcome to our project! This guide will help you set up and start the project on your local machine, and also provide you with information on how to access and run our comprehensive documentation.
 
